@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Notification Trigger</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 50px; background-color: #f4f4f9; }
+        form { background: white; padding: 20px; border-radius: 8px; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <h2>Submit the Form for a Notification</h2>
+    
+    <form id="contactForm">
+        <div class="input-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" required placeholder="John Doe">
+        </div>
+        <button type="submit">Submit Form</button>
+    </form>
+
+    <script>
+        // 1. Request permission as soon as the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
+        });
+
+        // 2. Handle the form submission
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevents the page from refreshing
+
+            const userName = document.getElementById('name').value;
+
+            // 3. Trigger the notification if permission is granted
+            if (Notification.permission === "granted") {
+                new Notification("Form Submitted! ✅", {
+                    body: `Thank you, ${userName}! Your submission was received.`,
+                    icon: "https://placeholder.com" // Optional thumbnail image URL
+                });
+            } else if (Notification.permission !== "denied") {
+                // If they haven't decided yet, ask again
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Success!", { body: "Form submitted successfully." });
+                    }
+                });
+            } else {
+                alert(`Thank you ${userName}, form submitted! (Enable browser notifications to see desktop alerts)`);
+            }
+
+            // Optional: Reset form fields after submission
+            this.reset();
+        });
+    </script>
+
+</body>
+</html>
